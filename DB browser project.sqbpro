@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/mejia/Documents/PROJECTS/Exercise Files/SQLite/quizdata.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="200"/><column_width id="3" width="3586"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,6:mainpeople"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="people" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="7" mode="0"/></sort><column_widths><column index="1" value="163"/><column index="2" value="163"/><column index="3" value="157"/><column index="4" value="218"/><column index="5" value="165"/><column index="6" value="185"/><column index="7" value="173"/><column index="8" value="194"/><column index="9" value="147"/><column index="10" value="82"/><column index="11" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="states" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="1" mode="0"/></sort><column_widths><column index="1" value="194"/><column index="2" value="195"/><column index="3" value="123"/><column index="4" value="235"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">SELECT first_name, last_name FROM people;
+
+
+-- WHERE
+SELECT *  
+FROM people 
+WHERE state_code = 'CO';
+
+SELECT *  
+FROM people 
+WHERE shirt_or_hat = 'hat';
+
+SELECT last_name, first_name, shirt_or_hat
+FROM people
+WHERE shirt_or_hat = 'shirt';
+
+
+-- AND
+SELECT last_name, first_name, shirt_or_hat, state_code, team
+FROM people
+WHERE shirt_or_hat='shirt' AND state_code='AL' AND team!= 'Angry Ants';
+
+
+-- IS NOT, &lt;&gt;
+SELECT last_name, first_name, shirt_or_hat, state_code, team
+FROM people
+WHERE shirt_or_hat IS'shirt' AND state_code IS NOT 'AL' AND team &lt;&gt; 'Angry Ants';
+
+
+-- OR, IS, use of ()
+SELECT last_name, first_name, shirt_or_hat, state_code
+FROM people
+WHERE (state_code IS'CA' OR state_code IS 'CO') AND shirt_or_hat IS 'shirt';
+
+
+-- LIKE % 
+SELECT *
+FROM people
+WHERE state_code LIKE 'C%';
+
+SELECT *
+FROM people
+WHERE state_code LIKE '%N';
+
+
+-- LIMIT, OFFSET
+SELECT *
+FROM people
+WHERE first_name LIKE 'B%N'
+LIMIT 5 OFFSET 5;
+
+
+-- ORDER BY, ASC, DESC
+SELECT first_name, last_name
+FROM people
+ORDER BY first_name DESC;
+
+
+-- LENGTH FUNCTION
+SELECT first_name, length(first_name)
+FROM people;
+
+
+-- DISTINCT FUNCTION
+SELECT DISTINCT(first_name)
+FROM people
+ORDER BY first_name;
+
+
+-- COUNT FUNCTION
+SELECT COUNT(*)
+FROM people
+WHERE state_code IS 'CA';
+
+
+-- QUIZ
+SELECT team, shirt_or_hat, first_name, last_name
+FROM people
+WHERE state_code IS 'CO'
+ORDER BY 	team, shirt_or_hat, last_name DESC;
+
+
+-- JOIN
+SELECT * 
+FROM states;
+
+SELECT people.first_name, people.state_code, states.division
+FROM people
+JOIN states ON people.state_code=states.state_abbrev;
+
+SELECT ppl.first_name, ppl.state_code, st.division
+FROM people ppl, states st
+WHERE ppl.state_code=st.state_abbrev;
+
+
+-- LEFT JOIN
+SELECT people.first_name, people.last_name,  people.state_code, states.state_name
+FROM states
+LEFT JOIN people ON people.state_code=states.state_abbrev;
+
+
+-- GROUP BY
+SELECT first_name, COUNT(first_name)
+FROM people
+GROUP BY first_name;
+
+SELECT state_code, COUNT(state_code)
+FROM people
+GROUP BY state_code;
+
+SELECT state_code, quiz_points, COUNT(quiz_points)
+FROM people
+GROUP BY state_code, quiz_points;
+
+
+-- QUIZ
+SELECT states.region, people.team, COUNT(people.team)
+FROM states
+JOIN people ON states.state_abbrev=people.state_code
+GROUP BY states.region, people.team;
+
+SELECT states.region,  COUNT(people.id_number)
+FROM states
+JOIN people ON states.state_abbrev=people.state_code
+GROUP BY states.region;
+
+
+-- MATH
+SELECT 1/3; -- returns 0
+SELECT 1/3.0; -- returns 0.3333
+SELECT 1&gt;9; -- returns 0, meaning false
+SELECT 1!=0; -- returns 1, meaning true
+
+SELECT first_name, quiz_points
+FROM people
+WHERE quiz_points &gt; 70
+ORDER BY quiz_points DESC;
+
+--MIN, MAX 
+SELECT min(quiz_points), max(quiz_points)
+FROM people;
+
+-- SUM
+SELECT SUM(quiz_points)
+FROM people;
+
+--AVG
+SELECT team, COUNT(team), SUM(quiz_points), AVG(quiz_points)
+FROM people
+GROUP BY team;
+
+
+-- SUB QUERY/SUBSELECT
+SELECT first_name, last_name, quiz_points
+FROM people
+WHERE quiz_points=(
+				SELECT MAX(quiz_points) FROM people
+				);
+				
+SELECT *
+FROM people
+WHERE state_code=(
+				SELECT state_abbrev FROM states WHERE state_name='Minnesota'
+				);
+				
+
+--LOWER, UPPER
+SELECT LOWER(first_name), UPPER(last_name)
+FROM people;		
+
+
+-- SUBSTR
+SELECT first_name, substr(last_name, 1, 5)
+FROM people;
+
+SELECT first_name, substr(last_name, -4) --last letters
+FROM people;
+
+
+-- REPLACE / case sensitive
+SELECT REPLACE(first_name, &quot;a&quot;, &quot;-&quot;)
+FROM people;
+
+
+-- CAST (order by sequence 1,2,3)
+SELECT quiz_points
+FROM people
+ORDER 	BY	CAST(quiz_points AS CHAR);
+
+
+-- returns the max 99 instead of 100
+SELECT MAX(CAST(quiz_points AS CHAR))
+FROM people;
+
+
+-- AS
+SELECT first_name AS firstname, UPPER(last_name) AS surname
+FROM people;
+
+
+-- QUIZ 
+SELECT 
+	states.state_name AS STATE, 
+	MAX(people.quiz_points) AS MAXPOINTS, 
+	AVG(people.quiz_points) AS AVGPOINTS
+FROM 
+	people
+	JOIN 
+		states 
+			ON states.state_abbrev=people.state_code
+GROUP BY 
+	state_code
+ORDER BY 
+	AVGPOINTS DESC;
+	
+	
+-- INSERT
+INSERT INTO people (first_name) VALUES ('Marcela');
+
+INSERT INTO people 
+(first_name, last_name) 
+VALUES 
+('Marcela', 'Mejia'),
+('Ruben', NULL);
+
+SELECT first_name, last_name
+FROM people;
+
+
+-- UPDATE
+UPDATE people
+SET last_name='Morrison'
+WHERE first_name='Carlos' AND city='Houston';
+
+SELECT *
+FROM people
+WHERE id_number=175;
+
+UPDATE people
+SET last_name='Mejia'
+WHERE id_number=175;
+
+
+-- DELETE
+DELETE FROM people WHERE id_number=1001;
+DELETE FROM people WHERE quiz_points IS NULL;
+
+
+--QUIZ / find Alice, from FL, Cobras team
+SELECT id_number, first_name, state_code, team
+FROM people
+WHERE 
+	first_name='Alice' AND
+	state_code= 'FL' AND
+	team LIKE '%Cobras';
+
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
